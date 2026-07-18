@@ -48,6 +48,8 @@ RUN chown -R www-data:www-data /var/www/html \
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-EXPOSE 80
+# Railway sets PORT dynamically
+ENV PORT=80
+EXPOSE ${PORT}
 
 CMD ["/usr/local/bin/docker-entrypoint.sh"]
