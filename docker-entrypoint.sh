@@ -1,24 +1,28 @@
 #!/bin/bash
 set -e
 
-# Generate APP_KEY jika belum ada
-php artisan key:generate --force
+echo "==> Starting SeminarKu deployment..."
 
-# Cache config & routes untuk performa
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Jalankan migrasi database
-php artisan migrate --force
-
-# Jalankan seeder hanya jika tabel users kosong
-USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null | tail -1 || echo "0")
-if [ "$USER_COUNT" = "0" ]; then
-    echo "Seeding database..."
-    php artisan db:seed --class=AdminSeeder --force
+# Buat .env dari .env.example jika belum ada
+# (Railway sudah inject nilai asli via environment variables)
+if [ ! -f .env ]; then
+    echo "==> Creating .env from .env.example..."
+    cp .env.example .env
 fi
 
+# Clear cache lama
+php artisan config:clear 2>/dev/null || true
+php artisan cache:clear   2>/dev/null || true
+
+# Jalankan migrasi database
+echo "==> Running database migrations..."
+php artisan migrate --force
+
+# Jalankan seeder (skip jika sudah ada data)
+echo "==> Seeding database..."
+php artisan db:seed --class=AdminSeeder --force 2>/dev/null \
+    || echo "==> Seeder skipped (data already exists)"
+
 # Mulai Apache
-echo "Starting Apache..."
-apache2-foreground
+echo "==> Starting Apache..."
+exec apache2-foreground
