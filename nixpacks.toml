@@ -1,7 +1,6 @@
 [phases.build]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs",
-    "npm ci && npm run build && rm -rf node_modules"
+    "composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs"
 ]
 
 [start]

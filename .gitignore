@@ -1,6 +1,6 @@
 /.phpunit.cache
 /node_modules
-/public/build
+# /public/build  -- committed for Railway deployment (no Node needed on server)
 /public/hot
 /public/storage
 /storage/*.key
