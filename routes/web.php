@@ -15,6 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// ── Fix: redirect /dashboard ke role yang sesuai ──────────────
+Route::get('/dashboard', function () {
+    if (!auth()->check()) return redirect()->route('login');
+    return auth()->user()->isAdmin()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('user.dashboard');
+})->middleware(['auth'])->name('dashboard');
+
 // ── Admin Routes ──────────────────────────────────────────────
 Route::prefix('admin')
     ->name('admin.')

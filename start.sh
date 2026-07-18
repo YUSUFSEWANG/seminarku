@@ -31,4 +31,6 @@ echo "==> Seeding..."
 php artisan db:seed --class=AdminSeeder --force 2>/dev/null || echo "Seeder skipped"
 
 echo "==> Starting server on port ${PORT:-8080}..."
+# PHP_CLI_SERVER_WORKERS: support multiple concurrent requests
+export PHP_CLI_SERVER_WORKERS=4
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
