@@ -1,7 +1,8 @@
 [phases.build]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs"
+    "composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs",
+    "chmod -R 777 storage bootstrap/cache"
 ]
 
 [start]
-cmd = """printf 'APP_NAME=SeminarKu\nAPP_ENV=production\nAPP_DEBUG=false\nAPP_KEY=%s\nAPP_URL=https://%s\nDB_CONNECTION=mysql\nDB_HOST=%s\nDB_PORT=%s\nDB_DATABASE=%s\nDB_USERNAME=%s\nDB_PASSWORD=%s\nSESSION_DRIVER=file\nCACHE_DRIVER=file\nLOG_CHANNEL=stderr\nLOG_LEVEL=error\n' "$APP_KEY" "$RAILWAY_PUBLIC_DOMAIN" "$DB_HOST" "$DB_PORT" "$DB_DATABASE" "$DB_USERNAME" "$DB_PASSWORD" > .env && php artisan migrate --force && php artisan db:seed --class=AdminSeeder --force 2>/dev/null; php artisan serve --host=0.0.0.0 --port=$PORT"""
+cmd = "cp .env.example .env && chmod -R 777 storage bootstrap/cache && php artisan serve --host=0.0.0.0 --port=$PORT"
