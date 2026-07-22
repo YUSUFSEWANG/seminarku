@@ -12,7 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Hapus activity_logs lebih dari 90 hari — jalankan setiap hari tengah malam
+        $schedule->command('model:prune', ['--model' => \App\Models\ActivityLog::class])
+                 ->daily();
+
+        // Hapus session yang sudah expired (database driver) — setiap hari
+        $schedule->command('session:gc')->daily();
     }
 
     /**

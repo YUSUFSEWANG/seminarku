@@ -11,13 +11,19 @@ class PendaftaranController extends Controller
 {
     public function index(Request $request)
     {
+        // Validasi query params filter untuk mencegah manipulasi nilai tidak valid
+        $request->validate([
+            'status'     => 'nullable|in:pending,dikonfirmasi,dibatalkan',
+            'kegiatan_id' => 'nullable|integer|exists:kegiatans,id',
+        ]);
+
         $query = Pendaftaran::with(['user', 'kegiatan']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         if ($request->filled('kegiatan_id')) {
-            $query->where('kegiatan_id', $request->kegiatan_id);
+            $query->where('kegiatan_id', (int) $request->kegiatan_id);
         }
 
         $pendaftarans = $query->orderByDesc('created_at')->paginate(15);

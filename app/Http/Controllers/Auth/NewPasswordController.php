@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -45,6 +47,18 @@ class NewPasswordController extends Controller
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
+
+                // Invalidate ALL active sessions for this user.
+                // Mencegah attacker yang sudah login tetap aktif setelah password direset.
+                DB::table('sessions')
+                    ->where('user_id', $user->id)
+                    ->delete();
+
+                ActivityLog::record(
+                    'password_reset',
+                    "Password direset melalui link email",
+                    $user->id
+                );
 
                 event(new PasswordReset($user));
             }

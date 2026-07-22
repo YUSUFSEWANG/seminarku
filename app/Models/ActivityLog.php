@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\MassPrunable;
 
 class ActivityLog extends Model
 {
+    use MassPrunable;
+
     protected $fillable = [
         'user_id',
         'action',
@@ -15,6 +19,12 @@ class ActivityLog extends Model
         'model_type',
         'model_id',
     ];
+
+    // ── Pruning — hapus log lebih dari 90 hari secara otomatis ───────────
+    public function prunable(): Builder
+    {
+        return static::where('created_at', '<=', now()->subDays(90));
+    }
 
     // ── Relasi ───────────────────────────────────────────────
     public function user()
